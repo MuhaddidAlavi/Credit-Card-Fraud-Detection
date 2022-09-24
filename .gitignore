@@ -1,129 +1,1242 @@
-# Byte-compiled / optimized / DLL files
-__pycache__/
-*.py[cod]
-*$py.class
 
-# C extensions
-*.so
+# import all the required libraries and dependencies for dataframe
 
-# Distribution / packaging
-.Python
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-pip-wheel-metadata/
-share/python-wheels/
-*.egg-info/
-.installed.cfg
-*.egg
-MANIFEST
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+import warnings
+warnings.filterwarnings("ignore")
+from datetime import datetime, timedelta
 
-# PyInstaller
-#  Usually these files are written by a python script from a template
-#  before PyInstaller builds the exe, so as to inject date/other infos into it.
-*.manifest
-*.spec
+# import all libraries and dependencies for data visualization
+pd.options.display.float_format='{:.4f}'.format
+plt.rcParams['figure.figsize'] = [8,8]
+pd.set_option('display.max_columns', 500)
+pd.set_option('display.max_colwidth', -1) 
+sns.set(style='darkgrid')
+import matplotlib.ticker as plticker
+%matplotlib inline
 
-# Installer logs
-pip-log.txt
-pip-delete-this-directory.txt
+# import all the required libraries and dependencies for machine learning
 
-# Unit test / coverage reports
-htmlcov/
-.tox/
-.nox/
-.coverage
-.coverage.*
-.cache
-nosetests.xml
-coverage.xml
-*.cover
-*.py,cover
-.hypothesis/
-.pytest_cache/
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.linear_model import LogisticRegression
+from sklearn.model_selection import GridSearchCV
+from sklearn.model_selection import KFold
+from sklearn.metrics import roc_auc_score
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import AdaBoostClassifier
+from sklearn import metrics
+import statsmodels.api as sm
+import pickle
+import gc 
+from sklearn import svm
+from xgboost import XGBClassifier
+import xgboost as xgb
+from sklearn.metrics import accuracy_score
+from sklearn.metrics import roc_curve,roc_auc_score, precision_recall_curve, average_precision_score
+from sklearn.metrics import classification_report
+from sklearn.metrics import confusion_matrix
+import os
+os.environ['KAGGLE_CONFIG_DIR'] = '/content'
+!kaggle datasets download -d hellbuoy/credit-card-fraud
+Traceback (most recent call last):
+  File "/usr/local/bin/kaggle", line 5, in <module>
+    from kaggle.cli import main
+  File "/usr/local/lib/python2.7/dist-packages/kaggle/__init__.py", line 23, in <module>
+    api.authenticate()
+  File "/usr/local/lib/python2.7/dist-packages/kaggle/api/kaggle_api_extended.py", line 146, in authenticate
+    self.config_file, self.config_dir))
+IOError: Could not find kaggle.json. Make sure it's located in /content. Or use the environment method.
+!unzip \*.zip
+unzip:  cannot find or open *.zip, *.zip.zip or *.zip.ZIP.
 
-# Translations
-*.mo
-*.pot
+No zipfiles found.
+# Local file path.Please change the path accordingly.
 
-# Django stuff:
-*.log
-local_settings.py
-db.sqlite3
-db.sqlite3-journal
+path = '/content/creditcard.csv'
+# Reading the Credit Card file on which analysis needs to be done
 
-# Flask stuff:
-instance/
-.webassets-cache
+df_card = pd.read_csv(path)
+df_card.head()
+---------------------------------------------------------------------------
+FileNotFoundError                         Traceback (most recent call last)
+<ipython-input-6-5953b5410ff3> in <module>()
+      1 # Reading the Credit Card file on which analysis needs to be done
+      2 
+----> 3 df_card = pd.read_csv(path)
+      4 df_card.head()
 
-# Scrapy stuff:
-.scrapy
+/usr/local/lib/python3.7/dist-packages/pandas/io/parsers.py in read_csv(filepath_or_buffer, sep, delimiter, header, names, index_col, usecols, squeeze, prefix, mangle_dupe_cols, dtype, engine, converters, true_values, false_values, skipinitialspace, skiprows, skipfooter, nrows, na_values, keep_default_na, na_filter, verbose, skip_blank_lines, parse_dates, infer_datetime_format, keep_date_col, date_parser, dayfirst, cache_dates, iterator, chunksize, compression, thousands, decimal, lineterminator, quotechar, quoting, doublequote, escapechar, comment, encoding, dialect, error_bad_lines, warn_bad_lines, delim_whitespace, low_memory, memory_map, float_precision)
+    686     )
+    687 
+--> 688     return _read(filepath_or_buffer, kwds)
+    689 
+    690 
 
-# Sphinx documentation
-docs/_build/
+/usr/local/lib/python3.7/dist-packages/pandas/io/parsers.py in _read(filepath_or_buffer, kwds)
+    452 
+    453     # Create the parser.
+--> 454     parser = TextFileReader(fp_or_buf, **kwds)
+    455 
+    456     if chunksize or iterator:
 
-# PyBuilder
-target/
+/usr/local/lib/python3.7/dist-packages/pandas/io/parsers.py in __init__(self, f, engine, **kwds)
+    946             self.options["has_index_names"] = kwds["has_index_names"]
+    947 
+--> 948         self._make_engine(self.engine)
+    949 
+    950     def close(self):
 
-# Jupyter Notebook
-.ipynb_checkpoints
+/usr/local/lib/python3.7/dist-packages/pandas/io/parsers.py in _make_engine(self, engine)
+   1178     def _make_engine(self, engine="c"):
+   1179         if engine == "c":
+-> 1180             self._engine = CParserWrapper(self.f, **self.options)
+   1181         else:
+   1182             if engine == "python":
 
-# IPython
-profile_default/
-ipython_config.py
+/usr/local/lib/python3.7/dist-packages/pandas/io/parsers.py in __init__(self, src, **kwds)
+   2008         kwds["usecols"] = self.usecols
+   2009 
+-> 2010         self._reader = parsers.TextReader(src, **kwds)
+   2011         self.unnamed_cols = self._reader.unnamed_cols
+   2012 
 
-# pyenv
-.python-version
+pandas/_libs/parsers.pyx in pandas._libs.parsers.TextReader.__cinit__()
 
-# pipenv
-#   According to pypa/pipenv#598, it is recommended to include Pipfile.lock in version control.
-#   However, in case of collaboration, if having platform-specific dependencies or dependencies
-#   having no cross-platform support, pipenv may install dependencies that don't work, or not
-#   install all needed dependencies.
-#Pipfile.lock
+pandas/_libs/parsers.pyx in pandas._libs.parsers.TextReader._setup_parser_source()
 
-# PEP 582; used by e.g. github.com/David-OConnor/pyflow
-__pypackages__/
+FileNotFoundError: [Errno 2] No such file or directory: '/content/creditcard.csv'
+df_card.shape
+---------------------------------------------------------------------------
+NameError                                 Traceback (most recent call last)
+<ipython-input-7-ca705298ae06> in <module>()
+----> 1 df_card.shape
 
-# Celery stuff
-celerybeat-schedule
-celerybeat.pid
+NameError: name 'df_card' is not defined
+df_card.describe()
+Time	V1	V2	V3	V4	V5	V6	V7	V8	V9	V10	V11	V12	V13	V14	V15	V16	V17	V18	V19	V20	V21	V22	V23	V24	V25	V26	V27	V28	Amount	Class
+count	284807.0000	284807.0000	284807.0000	284807.0000	284807.0000	284807.0000	284807.0000	284807.0000	284807.0000	284807.0000	284807.0000	284807.0000	284807.0000	284807.0000	284807.0000	284807.0000	284807.0000	284807.0000	284807.0000	284807.0000	284807.0000	284807.0000	284807.0000	284807.0000	284807.0000	284807.0000	284807.0000	284807.0000	284807.0000	284807.0000	284807.0000
+mean	94813.8596	0.0000	0.0000	-0.0000	0.0000	-0.0000	0.0000	-0.0000	-0.0000	-0.0000	0.0000	0.0000	-0.0000	0.0000	0.0000	0.0000	0.0000	-0.0000	0.0000	0.0000	0.0000	0.0000	0.0000	0.0000	0.0000	0.0000	0.0000	-0.0000	-0.0000	88.3496	0.0017
+std	47488.1460	1.9587	1.6513	1.5163	1.4159	1.3802	1.3323	1.2371	1.1944	1.0986	1.0888	1.0207	0.9992	0.9953	0.9586	0.9153	0.8763	0.8493	0.8382	0.8140	0.7709	0.7345	0.7257	0.6245	0.6056	0.5213	0.4822	0.4036	0.3301	250.1201	0.0415
+min	0.0000	-56.4075	-72.7157	-48.3256	-5.6832	-113.7433	-26.1605	-43.5572	-73.2167	-13.4341	-24.5883	-4.7975	-18.6837	-5.7919	-19.2143	-4.4989	-14.1299	-25.1628	-9.4987	-7.2135	-54.4977	-34.8304	-10.9331	-44.8077	-2.8366	-10.2954	-2.6046	-22.5657	-15.4301	0.0000	0.0000
+25%	54201.5000	-0.9204	-0.5985	-0.8904	-0.8486	-0.6916	-0.7683	-0.5541	-0.2086	-0.6431	-0.5354	-0.7625	-0.4056	-0.6485	-0.4256	-0.5829	-0.4680	-0.4837	-0.4988	-0.4563	-0.2117	-0.2284	-0.5424	-0.1618	-0.3546	-0.3171	-0.3270	-0.0708	-0.0530	5.6000	0.0000
+50%	84692.0000	0.0181	0.0655	0.1798	-0.0198	-0.0543	-0.2742	0.0401	0.0224	-0.0514	-0.0929	-0.0328	0.1400	-0.0136	0.0506	0.0481	0.0664	-0.0657	-0.0036	0.0037	-0.0625	-0.0295	0.0068	-0.0112	0.0410	0.0166	-0.0521	0.0013	0.0112	22.0000	0.0000
+75%	139320.5000	1.3156	0.8037	1.0272	0.7433	0.6119	0.3986	0.5704	0.3273	0.5971	0.4539	0.7396	0.6182	0.6625	0.4931	0.6488	0.5233	0.3997	0.5008	0.4589	0.1330	0.1864	0.5286	0.1476	0.4395	0.3507	0.2410	0.0910	0.0783	77.1650	0.0000
+max	172792.0000	2.4549	22.0577	9.3826	16.8753	34.8017	73.3016	120.5895	20.0072	15.5950	23.7451	12.0189	7.8484	7.1269	10.5268	8.8777	17.3151	9.2535	5.0411	5.5920	39.4209	27.2028	10.5031	22.5284	4.5845	7.5196	3.5173	31.6122	33.8478	25691.1600	1.0000
+# Data Information
 
-# SageMath parsed files
-*.sage.py
+df_card.info()
+<class 'pandas.core.frame.DataFrame'>
+RangeIndex: 284807 entries, 0 to 284806
+Data columns (total 31 columns):
+ #   Column  Non-Null Count   Dtype  
+---  ------  --------------   -----  
+ 0   Time    284807 non-null  float64
+ 1   V1      284807 non-null  float64
+ 2   V2      284807 non-null  float64
+ 3   V3      284807 non-null  float64
+ 4   V4      284807 non-null  float64
+ 5   V5      284807 non-null  float64
+ 6   V6      284807 non-null  float64
+ 7   V7      284807 non-null  float64
+ 8   V8      284807 non-null  float64
+ 9   V9      284807 non-null  float64
+ 10  V10     284807 non-null  float64
+ 11  V11     284807 non-null  float64
+ 12  V12     284807 non-null  float64
+ 13  V13     284807 non-null  float64
+ 14  V14     284807 non-null  float64
+ 15  V15     284807 non-null  float64
+ 16  V16     284807 non-null  float64
+ 17  V17     284807 non-null  float64
+ 18  V18     284807 non-null  float64
+ 19  V19     284807 non-null  float64
+ 20  V20     284807 non-null  float64
+ 21  V21     284807 non-null  float64
+ 22  V22     284807 non-null  float64
+ 23  V23     284807 non-null  float64
+ 24  V24     284807 non-null  float64
+ 25  V25     284807 non-null  float64
+ 26  V26     284807 non-null  float64
+ 27  V27     284807 non-null  float64
+ 28  V28     284807 non-null  float64
+ 29  Amount  284807 non-null  float64
+ 30  Class   284807 non-null  int64  
+dtypes: float64(30), int64(1)
+memory usage: 67.4 MB
+# Calculating the Missing Value% in the DF
 
-# Environments
-.env
-.venv
-env/
-venv/
-ENV/
-env.bak/
-venv.bak/
+df_null = df_card.isnull().mean()*100
+df_null.sort_values(ascending=False).head()
+Class   0.0000
+V14     0.0000
+V1      0.0000
+V2      0.0000
+V3      0.0000
+dtype: float64
+# Datatype check for the dataframe
 
-# Spyder project settings
-.spyderproject
-.spyproject
+df_card.dtypes
+Time      float64
+V1        float64
+V2        float64
+V3        float64
+V4        float64
+V5        float64
+V6        float64
+V7        float64
+V8        float64
+V9        float64
+V10       float64
+V11       float64
+V12       float64
+V13       float64
+V14       float64
+V15       float64
+V16       float64
+V17       float64
+V18       float64
+V19       float64
+V20       float64
+V21       float64
+V22       float64
+V23       float64
+V24       float64
+V25       float64
+V26       float64
+V27       float64
+V28       float64
+Amount    float64
+Class     int64  
+dtype: object
+plt.figure(figsize=(13,7))
+plt.subplot(121)
+plt.title('Fraudulent BarPlot', fontweight='bold',fontsize=14)
+ax = df_card['Class'].value_counts().plot(kind='bar')
+total = float(len(df_card))
+for p in ax.patches:
+    height = p.get_height()
+    ax.text(p.get_x()+p.get_width()/2.,
+            height + 3,
+            '{:1.5f}'.format(height/total),
+            ha="center") 
 
-# Rope project settings
-.ropeproject
 
-# mkdocs documentation
-/site
+plt.subplot(122)
+df_card["Class"].value_counts().plot.pie(autopct = "%1.5f%%")
+plt.show()
 
-# mypy
-.mypy_cache/
-.dmypy.json
-dmypy.json
+classes=df_card['Class'].value_counts()
+normal_share=classes[0]/df_card['Class'].count()*100
+fraud_share=classes[1]/df_card['Class'].count()*100
+print(normal_share)
+print(fraud_share)
+99.82725143693798
+0.1727485630620034
+# Box Plot of amount for both classes
+plt.figure(figsize = (7, 6))
+a=sns.boxplot(x = 'Class', y = 'Amount',hue='Class', data = df_card,showfliers=False) 
+plt.setp(a.get_xticklabels(), rotation=45)
+[None, None, None, None]
 
-# Pyre type checker
-.pyre/
+# KDE plot to visualize the distribution of Amount for both the classes
+plt.rcParams['figure.figsize'] = [10,6]
+sns.kdeplot(df_card.loc[df_card['Class'] == 0, 'Amount'], label = 'Non Fraud')
+sns.kdeplot(df_card.loc[df_card['Class'] == 1, 'Amount'], label = 'Fraud')
+plt.title('Distribution of Amount by Target Value')
+plt.xlabel('Amount')
+plt.ylabel('Density')
+Text(0, 0.5, 'Density')
+
+# Time Distribution plot for transactions 
+plt.figure(figsize=(15,7))
+
+plt.title('Distribution of Transaction Time')
+sns.distplot(df_card['Time'].values/(60*60))
+<matplotlib.axes._subplots.AxesSubplot at 0x7fc5d49af410>
+
+# Storing Fraud and non-Fraud transactions 
+
+df_nonfraud = df_card[df_card.Class == 0]
+df_fraud = df_card[df_card.Class == 1]
+#Scatter plot between Time and Amount
+
+fig = plt.figure(figsize = (8,8))
+plt.scatter(df_nonfraud.Amount, df_nonfraud.Time.values/(60*60),alpha=0.5,label='Non Fraud')
+plt.scatter(df_fraud.Amount, df_fraud.Time.values/(60*60),alpha=1,label='Fraud')
+plt.xlabel('Amount')
+plt.ylabel('Time')
+plt.title('Scatter plot between Amount and Time ')
+plt.show()
+
+# Plot of high value transactions($200-$2000)
+
+bins = np.linspace(200, 2000, 100)
+plt.hist(df_nonfraud.Amount, bins, alpha=1, density=True, label='Non-Fraud')
+plt.hist(df_fraud.Amount, bins, alpha=1, density=True, label='Fraud')
+plt.legend(loc='upper right')
+plt.title("Amount by percentage of transactions (transactions \$200-$2000)")
+plt.xlabel("Transaction amount (USD)")
+plt.ylabel("Percentage of transactions (%)")
+plt.show()
+
+# Plot of transactions in 48 hours
+
+bins = np.linspace(0, 48, 48)
+plt.hist((df_nonfraud.Time/(60*60)), bins, alpha=1,label='Non-Fraud')
+plt.hist((df_fraud.Time/(60*60)), bins, alpha=0.6,label='Fraud')
+plt.legend(loc='upper right')
+plt.title("Percentage of transactions by hour")
+plt.xlabel("Transaction time from first transaction in the dataset (hours)")
+plt.ylabel("Percentage of transactions (%)")
+plt.show()
+
+# Putting the feature variable into X
+
+X = df_card.drop(['Class'],axis = 1)
+X.head(2)
+Time	V1	V2	V3	V4	V5	V6	V7	V8	V9	V10	V11	V12	V13	V14	V15	V16	V17	V18	V19	V20	V21	V22	V23	V24	V25	V26	V27	V28	Amount
+0	0.0000	-1.3598	-0.0728	2.5363	1.3782	-0.3383	0.4624	0.2396	0.0987	0.3638	0.0908	-0.5516	-0.6178	-0.9914	-0.3112	1.4682	-0.4704	0.2080	0.0258	0.4040	0.2514	-0.0183	0.2778	-0.1105	0.0669	0.1285	-0.1891	0.1336	-0.0211	149.6200
+1	0.0000	1.1919	0.2662	0.1665	0.4482	0.0600	-0.0824	-0.0788	0.0851	-0.2554	-0.1670	1.6127	1.0652	0.4891	-0.1438	0.6356	0.4639	-0.1148	-0.1834	-0.1458	-0.0691	-0.2258	-0.6387	0.1013	-0.3398	0.1672	0.1259	-0.0090	0.0147	2.6900
+# Putting the Target variable to y
+
+y = df_card['Class']
+from sklearn.model_selection import StratifiedShuffleSplit
+# Splitting the data into Train and Test set
+kfold = 4
+sss = StratifiedShuffleSplit(n_splits=kfold, test_size=0.3, random_state=9487)
+for train_index, test_index in sss.split(X, y):
+        print("TRAIN:", train_index, "TEST:", test_index)
+        X_train, X_test = X.iloc, X.iloc
+        y_train, y_test = y[train_index], y[test_index]
+TRAIN: [129141  91689 118805 ... 249655  69488 188068] TEST: [ 32603  71580 144362 ... 120664 260883 146701]
+TRAIN: [179661 129498 253513 ... 261021 275137 199709] TEST: [ 30193  96420  28988 ... 159837 243770  87245]
+TRAIN: [ 55609 250907 105943 ...  96700  41174 261733] TEST: [ 97330 182828 138896 ... 103047 280031 252278]
+TRAIN: [160541 270383   7914 ... 119570 142561 116811] TEST: [199984 152508 204491 ... 203781  88156  52492]
+# Checking Skewness of data
+
+plt.rcParams['figure.figsize'] = [10,8]
+plt.hist(df_card['Amount'],edgecolor='k',bins = 5)
+plt.title('Transaction Amount')
+plt.xlabel('Amount in USD') 
+plt.ylabel('Count')
+Text(0, 0.5, 'Count')
+
+from sklearn import preprocessing
+from sklearn.preprocessing import PowerTransformer
+pt = preprocessing.PowerTransformer(copy=False)
+PWTR_X = pt.fit_transform(X)
+Imbalanced Data Set
+Logistic Regression
+Model 1 : Logistic Regression on Imbalanced Data
+# Splitting dataset into test and train sets in 70:30 ratio after applying Power Transform
+
+kfold = 4
+sss = StratifiedShuffleSplit(n_splits=kfold, test_size=0.3, random_state=9487)
+for train_index, test_index in sss.split(PWTR_X, y):
+        print("TRAIN:", train_index, "TEST:", test_index)
+        X_train, X_test = PWTR_X[train_index], PWTR_X[test_index]
+        y_train, y_test = y[train_index], y[test_index]
+TRAIN: [129141  91689 118805 ... 249655  69488 188068] TEST: [ 32603  71580 144362 ... 120664 260883 146701]
+TRAIN: [179661 129498 253513 ... 261021 275137 199709] TEST: [ 30193  96420  28988 ... 159837 243770  87245]
+TRAIN: [ 55609 250907 105943 ...  96700  41174 261733] TEST: [ 97330 182828 138896 ... 103047 280031 252278]
+TRAIN: [160541 270383   7914 ... 119570 142561 116811] TEST: [199984 152508 204491 ... 203781  88156  52492]
+from sklearn.linear_model import LogisticRegression
+
+# Fit a logistic regression model to train data
+model_lr = LogisticRegression()
+model_lr.fit(X_train, y_train)
+LogisticRegression(C=1.0, class_weight=None, dual=False, fit_intercept=True,
+                   intercept_scaling=1, l1_ratio=None, max_iter=100,
+                   multi_class='auto', n_jobs=None, penalty='l2',
+                   random_state=None, solver='lbfgs', tol=0.0001, verbose=0,
+                   warm_start=False)
+# Predict on test data
+y_predicted = model_lr.predict(X_test)
+# Evaluation Metrics
+
+print('Classification report:\n', classification_report(y_test, y_predicted))
+print('Confusion matrix:\n',confusion_matrix(y_true = y_test, y_pred = y_predicted))
+print("Logistic Regression Accuracy: ",accuracy_score(y_test,y_predicted))
+print('ROC AUC : ', roc_auc_score(y_test, y_predicted))
+Classification report:
+               precision    recall  f1-score   support
+
+           0       1.00      1.00      1.00     85295
+           1       0.86      0.60      0.71       148
+
+    accuracy                           1.00     85443
+   macro avg       0.93      0.80      0.85     85443
+weighted avg       1.00      1.00      1.00     85443
+
+Confusion matrix:
+ [[85280    15]
+ [   59    89]]
+Logistic Regression Accuracy:  0.999133925541004
+ROC AUC :  0.8005877455508148
+# Function for roc_curve
+def plot_roc_curve(fpr,tpr,roc_auc):
+    plt.plot(fpr, tpr, linewidth=5, label='AUC = %0.3f'% roc_auc)
+    plt.plot([0,1],[0,1], linewidth=5)
+    plt.xlim([-0.01, 1])
+    plt.ylim([0, 1.01])
+    plt.legend(loc='upper right')
+    plt.title('Receiver operating characteristic curve (ROC)')
+    plt.ylabel('True Positive Rate')
+    plt.xlabel('False Positive Rate')
+    plt.show()
+# tpr and fpr
+fpr, tpr, threshold = roc_curve(y_test, y_predicted)
+roc_auc = roc_auc_score(y_test, y_predicted)
+# Plotting the roc curve 
+plt.rcParams['figure.figsize'] = [6,6]
+plot_roc_curve(fpr,tpr,roc_auc)
+
+Inference: Precision : 0.86 Recall : 0.60 F1-score : 0.70 Accuracy : 0.85 ROC AUC : 0.80
+
+Hyperparameter Tuning Logisitic Regression
+
+Model 2 : Logistic Regression on Imbalanced Data with K-Fold and Hypertuning¶
+from imblearn.metrics import sensitivity_specificity_support
+# Number of folds
+
+n_folds = 5
+# parameters 
+params ={'C': [0.1, 0.5, 1, 2, 3, 4, 5, 10], 'penalty': ['l1', 'l2']}
+
+lrh = LogisticRegression()
+
+model_lrh = GridSearchCV(estimator=lrh, cv=n_folds, param_grid=params, scoring='roc_auc', n_jobs=-1, verbose=1)
+# Fitting the model
+
+model_lrh.fit(X_train,y_train)
+Fitting 5 folds for each of 16 candidates, totalling 80 fits
+[Parallel(n_jobs=-1)]: Using backend LokyBackend with 2 concurrent workers.
+[Parallel(n_jobs=-1)]: Done  46 tasks      | elapsed:   21.6s
+[Parallel(n_jobs=-1)]: Done  80 out of  80 | elapsed:   38.8s finished
+GridSearchCV(cv=5, error_score=nan,
+             estimator=LogisticRegression(C=1.0, class_weight=None, dual=False,
+                                          fit_intercept=True,
+                                          intercept_scaling=1, l1_ratio=None,
+                                          max_iter=100, multi_class='auto',
+                                          n_jobs=None, penalty='l2',
+                                          random_state=None, solver='lbfgs',
+                                          tol=0.0001, verbose=0,
+                                          warm_start=False),
+             iid='deprecated', n_jobs=-1,
+             param_grid={'C': [0.1, 0.5, 1, 2, 3, 4, 5, 10],
+                         'penalty': ['l1', 'l2']},
+             pre_dispatch='2*n_jobs', refit=True, return_train_score=False,
+             scoring='roc_auc', verbose=1)
+pd.DataFrame(model_lrh.cv_results_)
+mean_fit_time	std_fit_time	mean_score_time	std_score_time	param_C	param_penalty	params	split0_test_score	split1_test_score	split2_test_score	split3_test_score	split4_test_score	mean_test_score	std_test_score	rank_test_score
+0	0.0397	0.0089	0.0000	0.0000	0.1000	l1	{'C': 0.1, 'penalty': 'l1'}	nan	nan	nan	nan	nan	nan	nan	9
+1	1.6356	0.1144	0.0281	0.0012	0.1000	l2	{'C': 0.1, 'penalty': 'l2'}	0.9696	0.9926	0.9882	0.9777	0.9740	0.9804	0.0086	1
+2	0.0262	0.0013	0.0000	0.0000	0.5000	l1	{'C': 0.5, 'penalty': 'l1'}	nan	nan	nan	nan	nan	nan	nan	10
+3	1.7489	0.1410	0.0276	0.0015	0.5000	l2	{'C': 0.5, 'penalty': 'l2'}	0.9700	0.9921	0.9864	0.9776	0.9734	0.9799	0.0082	2
+4	0.0260	0.0013	0.0000	0.0000	1	l1	{'C': 1, 'penalty': 'l1'}	nan	nan	nan	nan	nan	nan	nan	11
+5	1.7716	0.0762	0.0279	0.0011	1	l2	{'C': 1, 'penalty': 'l2'}	0.9701	0.9920	0.9861	0.9776	0.9733	0.9798	0.0081	3
+6	0.0258	0.0014	0.0000	0.0000	2	l1	{'C': 2, 'penalty': 'l1'}	nan	nan	nan	nan	nan	nan	nan	12
+7	1.8551	0.1415	0.0302	0.0060	2	l2	{'C': 2, 'penalty': 'l2'}	0.9701	0.9920	0.9860	0.9776	0.9732	0.9798	0.0081	4
+8	0.0266	0.0013	0.0000	0.0000	3	l1	{'C': 3, 'penalty': 'l1'}	nan	nan	nan	nan	nan	nan	nan	13
+9	1.8134	0.1342	0.0291	0.0035	3	l2	{'C': 3, 'penalty': 'l2'}	0.9702	0.9920	0.9859	0.9776	0.9732	0.9798	0.0081	5
+10	0.0261	0.0018	0.0000	0.0000	4	l1	{'C': 4, 'penalty': 'l1'}	nan	nan	nan	nan	nan	nan	nan	14
+11	1.7914	0.0745	0.0287	0.0037	4	l2	{'C': 4, 'penalty': 'l2'}	0.9702	0.9920	0.9859	0.9776	0.9732	0.9798	0.0081	6
+12	0.0268	0.0028	0.0000	0.0000	5	l1	{'C': 5, 'penalty': 'l1'}	nan	nan	nan	nan	nan	nan	nan	15
+13	1.7892	0.1141	0.0291	0.0023	5	l2	{'C': 5, 'penalty': 'l2'}	0.9702	0.9920	0.9859	0.9776	0.9732	0.9798	0.0081	7
+14	0.0252	0.0011	0.0000	0.0000	10	l1	{'C': 10, 'penalty': 'l1'}	nan	nan	nan	nan	nan	nan	nan	16
+15	1.7800	0.1116	0.0254	0.0045	10	l2	{'C': 10, 'penalty': 'l2'}	0.9702	0.9920	0.9858	0.9776	0.9732	0.9797	0.0081	8
+print("Logistic Regression with PCA Best AUC : ", model_lrh.best_score_)
+print("Logistic Regression with PCA Best hyperparameters: ", model_lrh.best_params_)
+Logistic Regression with PCA Best AUC :  0.9804184472371569
+Logistic Regression with PCA Best hyperparameters:  {'C': 0.1, 'penalty': 'l2'}
+# Passing the best parameteres
+model_lrh_tuned = LogisticRegression(penalty='l2',C=0.1)
+# Predicting on test data
+
+model_lrh_tuned.fit(X_train,y_train)
+y_predicted = model_lrh_tuned.predict(X_test)
+#Evaluation Metrices
+
+print('Classification report:\n', classification_report(y_test, y_predicted))
+print('Confusion matrix:\n',confusion_matrix(y_true = y_test, y_pred = y_predicted))
+print("Logistic Regression Accuracy: ",accuracy_score(y_test,y_predicted))
+print('ROC AUC : ', roc_auc_score(y_test, y_predicted))
+Classification report:
+               precision    recall  f1-score   support
+
+           0       1.00      1.00      1.00     85295
+           1       0.85      0.59      0.70       148
+
+    accuracy                           1.00     85443
+   macro avg       0.93      0.79      0.85     85443
+weighted avg       1.00      1.00      1.00     85443
+
+Confusion matrix:
+ [[85280    15]
+ [   61    87]]
+Logistic Regression Accuracy:  0.9991105181231933
+ROC AUC :  0.7938309887940581
+# Create true and false positive rates
+fpr, tpr, threshold = roc_curve(y_test, y_predicted)
+roc_auc = roc_auc_score(y_test, y_predicted)
+# Plot the roc curve 
+plt.rcParams['figure.figsize'] = [6,6]
+plot_roc_curve(fpr,tpr,roc_auc)
+
+Inference: Precision : 0.85 Recall : 0.59 F1-score : 0.70 Accuracy : 0.99 ROC AUC : 0.79
+
+Random Forest
+
+Model 3 : Random Forest on Imbalanced Data
+#Initializing Random forest and creating model
+
+from sklearn.ensemble import RandomForestClassifier
+model_rfc = RandomForestClassifier(n_jobs=-1, 
+                             random_state=2018,
+                             criterion='gini',
+                             n_estimators=100,
+                             verbose=False)
+# Fitting the model on Train data and Predicting on Test data
+
+model_rfc.fit(X_train,y_train)
+y_predicted = model_rfc.predict(X_test)
+---------------------------------------------------------------------------
+NameError                                 Traceback (most recent call last)
+<ipython-input-2-07da0c95e645> in <module>()
+      1 # Fitting the model on Train data and Predicting on Test data
+      2 
+----> 3 model_rfc.fit(X_train,y_train)
+      4 y_predicted = model_rfc.predict(X_test)
+
+NameError: name 'X_train' is not defined
+# Evaluation Metrics
+
+print('Classification report:\n', classification_report(y_test, y_predicted))
+print('Confusion matrix:\n',confusion_matrix(y_true = y_test, y_pred = y_predicted))
+print("Logistic Regression Accuracy: ",accuracy_score(y_test,y_predicted))
+print('ROC AUC : ', roc_auc_score(y_test, y_predicted))
+# Create true and false positive rates
+fpr, tpr, threshold = roc_curve(y_test, y_predicted)
+roc_auc = roc_auc_score(y_test, y_predicted)
+# Plot the roc curve 
+plt.rcParams['figure.figsize'] = [6,6]
+plot_roc_curve(fpr,tpr,roc_auc)
+Inference: Precision : 0.94 Recall : 0.70 F1-score : 0.80 Accuracy : 0.99 ROC AUC : 0.85
+
+Hyperparameter Tuning Random Forest
+
+Model 4 : Random Forest on Imbalanced Data with K-Fold and Hyperparamater Tuning
+from sklearn.model_selection import GridSearchCV
+from sklearn.model_selection import StratifiedKFold
+from sklearn.metrics import accuracy_score
+from sklearn.model_selection import RandomizedSearchCV
+# Defining Parameters
+params = { 
+    'n_estimators': [200, 400],
+    'max_features': ['auto', 'sqrt', 'log2'],
+    'max_depth' : [4,5,6,7,8],
+    'criterion' :['gini', 'entropy']
+}
+# Stratified K Fold
+cross_val = StratifiedKFold(n_splits=3)
+index_iterator = cross_val.split(X_train, y_train)
+clf = RandomForestClassifier()
+clf_random = RandomizedSearchCV(estimator = clf, param_distributions = params, n_iter = 50, cv = cross_val,
+                                verbose=2, random_state=42, n_jobs = -1,scoring='roc_auc')
+# Passing the best parameteres based on Randomized Search CV
+model_rfc_tuned = RandomForestClassifier(bootstrap=True,
+                               class_weight={0:1, 1:12}, # 0: non-fraud , 1:fraud
+                               criterion='gini',
+                               max_depth=5,
+                               max_features='sqrt',
+                               min_samples_leaf=10,
+                               n_estimators=200,
+                               n_jobs=-1, 
+                               random_state=5)
+# Fitting the model on Train data and Predicting on Test Data
+
+model_rfc_tuned.fit(X_train,y_train)
+y_predicted = model_rfc_tuned.predict(X_test)
+# Evaluation Metrices
+print('Classification report:\n', classification_report(y_test, y_predicted))
+print('Confusion matrix:\n',confusion_matrix(y_true = y_test, y_pred = y_predicted))
+print("Logistic Regression Accuracy: ",accuracy_score(y_test,y_predicted))
+print('ROC AUC : ', roc_auc_score(y_test, y_predicted))
+Classification report:
+               precision    recall  f1-score   support
+
+           0       1.00      1.00      1.00     85295
+           1       0.81      0.71      0.76       148
+
+    accuracy                           1.00     85443
+   macro avg       0.91      0.85      0.88     85443
+weighted avg       1.00      1.00      1.00     85443
+
+Confusion matrix:
+ [[85271    24]
+ [   43   105]]
+Logistic Regression Accuracy:  0.9992158515033414
+ROC AUC :  0.8545890415299524
+# Create true and false positive rates
+fpr, tpr, threshold = roc_curve(y_test, y_predicted)
+roc_auc = roc_auc_score(y_test, y_predicted)
+# Plot the roc curve 
+plt.rcParams['figure.figsize'] = [6,6]
+plot_roc_curve(fpr,tpr,roc_auc)
+
+Inference: Precision : 0.81 Recall : 0.71 F1-score : 0.76 Accuracy : 0.99 ROC AUC : 0.85
+
+XG Boost
+
+Model 5 : XG Boost on Imbalanced Data
+#Initializing Random forest and creating model
+model_xgb = XGBClassifier()
+# Fitting the model on Train data and Predicting on Test data
+model_xgb.fit(X_train,y_train)
+y_predicted = model_xgb.predict(X_test)
+---------------------------------------------------------------------------
+NameError                                 Traceback (most recent call last)
+<ipython-input-9-0e0e1d18b9d4> in <module>()
+      1 # Fitting the model on Train data and Predicting on Test data
+----> 2 model_xgb.fit(X_train,y_train)
+      3 y_predicted = model_xgb.predict(X_test)
+
+NameError: name 'X_train' is not defined
+# Evaluation Metrices
+print('Classification report:\n', classification_report(y_test, y_predicted))
+print('Confusion matrix:\n',confusion_matrix(y_true = y_test, y_pred = y_predicted))
+print("Logistic Regression Accuracy: ",accuracy_score(y_test,y_predicted))
+print('ROC AUC : ', roc_auc_score(y_test, y_predicted))
+# Create true and false positive rates
+fpr, tpr, threshold = roc_curve(y_test, y_predicted)
+roc_auc = roc_auc_score(y_test, y_predicted)
+# Plot the roc curve 
+plt.rcParams['figure.figsize'] = [6,6]
+plot_roc_curve(fpr,tpr,roc_auc)
+Inference: Precision : 0.95 Recall : 0.74 F1-score : 0.83 Accuracy : 0.99 ROC AUC : 0.87
+
+Hyperparameter Tuning XGB
+
+Model 6 : XGB on Imbalanced Data with K-Fold and Hyperparamater Tuning
+# Defining parameters
+params = {
+        'min_child_weight': [1, 5, 10],
+        'gamma': [0.5, 1, 1.5, 2, 5],
+        'subsample': [0.6, 0.8, 1.0],
+        'colsample_bytree': [0.6, 0.8, 1.0],
+        'max_depth': [3, 4, 5]
+        }
+# Stratified K Fold
+cross_val = StratifiedKFold(n_splits=5)
+index_iterator = cross_val.split(X_train, y_train)
+
+
+xgb_cross = XGBClassifier(learning_rate=0.02, n_estimators=100, objective='binary:logistic',
+                    silent=True, nthread=1) 
+
+
+xgb_random = RandomizedSearchCV(estimator = xgb_cross, param_distributions = params, n_iter =30 , cv = cross_val,
+                                verbose=2, random_state=42, n_jobs = -1,scoring='roc_auc')
+# Passing the best parameteres based on Randomized Search CV
+model_xgb_tuned = XGBClassifier(min_child_weight= 5,
+        gamma= 1.5,
+        subsample= 1.0,
+        colsample_bytree= 0.6,
+        max_depth= 5)
+# Fitting the model on Train data and Predicting on Test data
+model_xgb_tuned.fit(X_train,y_train)
+y_predicted = model_xgb_tuned.predict(X_test)
+# Evaluation metrices
+print('Classification report:\n', classification_report(y_test, y_predicted))
+print('Confusion matrix:\n',confusion_matrix(y_true = y_test, y_pred = y_predicted))
+print("Logistic Regression Accuracy: ",accuracy_score(y_test,y_predicted))
+print('ROC AUC : ', roc_auc_score(y_test, y_predicted))
+Classification report:
+               precision    recall  f1-score   support
+
+           0       1.00      1.00      1.00     85295
+           1       0.93      0.72      0.81       148
+
+    accuracy                           1.00     85443
+   macro avg       0.96      0.86      0.90     85443
+weighted avg       1.00      1.00      1.00     85443
+
+Confusion matrix:
+ [[85287     8]
+ [   42   106]]
+Logistic Regression Accuracy:  0.9994148145547324
+ROC AUC :  0.8580612120415158
+# Create true and false positive rates
+fpr, tpr, threshold = roc_curve(y_test, y_predicted)
+roc_auc = roc_auc_score(y_test, y_predicted)
+# Plot the roc curve 
+plt.rcParams['figure.figsize'] = [6,6]
+plot_roc_curve(fpr,tpr,roc_auc)
+
+Inference: Precision : 0.95 Recall : 0.72 F1-score : 0.82 Accuracy : 0.99 ROC AUC : 0.85
+
+Balanced Data Set
+
+from imblearn.over_sampling import RandomOverSampler
+from imblearn.over_sampling import SMOTE
+from imblearn.over_sampling import ADASYN
+
+# Resample training data
+ros = RandomOverSampler()
+smote = SMOTE(random_state=5)
+adasyn = ADASYN(random_state=5)
+
+X_train_ros, y_train_ros = ros.fit_sample(X_train,y_train)
+X_train_smote, y_train_smote = smote.fit_sample(X_train,y_train)
+X_train_adasyn, y_train_adasyn =adasyn.fit_sample(X_train,y_train)
+Logistic Regression
+
+Model 7 : Logistic Regression on ROS Balanced Data
+# Fit a logistic regression model to our data
+from sklearn.linear_model import LogisticRegression
+
+model_lr = LogisticRegression()
+model_lr.fit(X_train_ros, y_train_ros)
+
+# Obtain model predictions
+y_predicted = model_lr.predict(X_test)
+# Evaluation Metrics
+print('Classification report:\n', classification_report(y_test, y_predicted))
+print('Confusion matrix:\n',confusion_matrix(y_true = y_test, y_pred = y_predicted))
+print("Logistic Regression Accuracy: ",accuracy_score(y_test,y_predicted))
+print('ROC AUC : ', roc_auc_score(y_test, y_predicted))
+Classification report:
+               precision    recall  f1-score   support
+
+           0       1.00      0.98      0.99     85295
+           1       0.06      0.91      0.12       148
+
+    accuracy                           0.98     85443
+   macro avg       0.53      0.94      0.55     85443
+weighted avg       1.00      0.98      0.99     85443
+
+Confusion matrix:
+ [[83295  2000]
+ [   14   134]]
+Logistic Regression Accuracy:  0.9764287302646208
+ROC AUC :  0.9409786860545991
+# Create true and false positive rates
+fpr, tpr, threshold = roc_curve(y_test, y_predicted)
+roc_auc = roc_auc_score(y_test, y_predicted)
+# Plot the roc curve 
+plt.rcParams['figure.figsize'] = [6,6]
+plot_roc_curve(fpr,tpr,roc_auc)
+
+Inference: Precision : 0.06 Recall : 0.91 F1-score : 0.11 Accuracy : 0.97 ROC AUC : 0.94
+
+Model 8 : Logistic Regression on SMOTE Balanced Data
+
+# Fit a logistic regression model to our data
+from sklearn.linear_model import LogisticRegression
+
+model_lr = LogisticRegression()
+model_lr.fit(X_train_smote, y_train_smote)
+
+# Obtain model predictions
+y_predicted = model_lr.predict(X_test)
+# Evaluation Metrics
+print('Classification report:\n', classification_report(y_test, y_predicted))
+print('Confusion matrix:\n',confusion_matrix(y_true = y_test, y_pred = y_predicted))
+print("Logistic Regression Accuracy: ",accuracy_score(y_test,y_predicted))
+print('ROC AUC : ', roc_auc_score(y_test, y_predicted))
+Classification report:
+               precision    recall  f1-score   support
+
+           0       1.00      0.97      0.99     85295
+           1       0.06      0.91      0.11       148
+
+    accuracy                           0.97     85443
+   macro avg       0.53      0.94      0.55     85443
+weighted avg       1.00      0.97      0.99     85443
+
+Confusion matrix:
+ [[83076  2219]
+ [   14   134]]
+Logistic Regression Accuracy:  0.9738656180143488
+ROC AUC :  0.9396949062316317
+# Create true and false positive rates
+fpr, tpr, threshold = roc_curve(y_test, y_predicted)
+roc_auc = roc_auc_score(y_test, y_predicted)
+# Plot the roc curve 
+plt.rcParams['figure.figsize'] = [6,6]
+plot_roc_curve(fpr,tpr,roc_auc)
+
+Inference: Precision : 0.06 Recall : 0.91 F1-score : 0.11 Accuracy : 0.97 ROC AUC : 0.93
+
+Model 9 : Logistic Regression on ADASYN Balanced Data
+
+# Fit a logistic regression model to our data
+from sklearn.linear_model import LogisticRegression
+
+model_lr = LogisticRegression()
+model_lr.fit(X_train_adasyn, y_train_adasyn)
+
+# Obtain model predictions
+y_predicted = model_lr.predict(X_test)
+# Evaluation Metrics
+print('Classification report:\n', classification_report(y_test, y_predicted))
+print('Confusion matrix:\n',confusion_matrix(y_true = y_test, y_pred = y_predicted))
+print("Logistic Regression Accuracy: ",accuracy_score(y_test,y_predicted))
+print('ROC AUC : ', roc_auc_score(y_test, y_predicted))
+Classification report:
+               precision    recall  f1-score   support
+
+           0       1.00      0.91      0.96     85295
+           1       0.02      0.91      0.04       148
+
+    accuracy                           0.91     85443
+   macro avg       0.51      0.91      0.50     85443
+weighted avg       1.00      0.91      0.95     85443
+
+Confusion matrix:
+ [[78038  7257]
+ [   13   135]]
+Logistic Regression Accuracy:  0.9149140362580902
+ROC AUC :  0.913540486673437
+Inference: Precision : 0.02 Recall : 0.91 F1-score : 0.04 Accuracy : 0.91 ROC AUC : 0.91
+
+Random Forest
+
+Model 10 : Random Forest on ROS Balanced Data
+# Insantiate Model
+model_rfc = RandomForestClassifier(bootstrap=True,
+                               class_weight={0:1, 1:12}, # 0: non-fraud , 1:fraud
+                               criterion='entropy',
+                               max_depth=10, # Change depth of model
+                               min_samples_leaf=10, # Change the number of samples in leaf nodes
+                               n_estimators=20, # Change the number of trees to use
+                               n_jobs=-1, 
+                               random_state=5)
+# Fit the model on train data and predict on test data 
+model_rfc.fit(X_train_ros,y_train_ros)
+y_predicted = model_rfc.predict(X_test)
+# Evaluation Metrices
+print('Classification report:\n', classification_report(y_test, y_predicted))
+print('Confusion matrix:\n',confusion_matrix(y_true = y_test, y_pred = y_predicted))
+print("Logistic Regression Accuracy: ",accuracy_score(y_test,y_predicted))
+print('ROC AUC : ', roc_auc_score(y_test, y_predicted))
+Classification report:
+               precision    recall  f1-score   support
+
+           0       1.00      1.00      1.00     85295
+           1       0.47      0.78      0.59       148
+
+    accuracy                           1.00     85443
+   macro avg       0.73      0.89      0.79     85443
+weighted avg       1.00      1.00      1.00     85443
+
+Confusion matrix:
+ [[85164   131]
+ [   32   116]]
+Logistic Regression Accuracy:  0.9980922954484276
+ROC AUC :  0.8911239688014412
+Inference: Precision : 0.46 Recall : 0.79 F1-score : 0.58 Accuracy : 0.99 ROC AUC : 0.89
+
+Model 11 : Random Forest on SMOTE Balanced Data
+
+# Fit the model on train data and predict on test data 
+model_rfc.fit(X_train_smote,y_train_smote)
+y_predicted = model_rfc.predict(X_test)
+# Evaluation Metrices
+print('Classification report:\n', classification_report(y_test, y_predicted))
+print('Confusion matrix:\n',confusion_matrix(y_true = y_test, y_pred = y_predicted))
+print("Logistic Regression Accuracy: ",accuracy_score(y_test,y_predicted))
+print('ROC AUC : ', roc_auc_score(y_test, y_predicted))
+Classification report:
+               precision    recall  f1-score   support
+
+           0       1.00      0.98      0.99     85295
+           1       0.06      0.84      0.12       148
+
+    accuracy                           0.98     85443
+   macro avg       0.53      0.91      0.55     85443
+weighted avg       1.00      0.98      0.99     85443
+
+Confusion matrix:
+ [[83462  1833]
+ [   23   125]]
+Logistic Regression Accuracy:  0.9782779162716665
+ROC AUC :  0.9115522360393103
+Inference: Precision : 0.06 Recall : 0.84 F1-score : 0.12 Accuracy : 0.97 ROC AUC : 0.91
+
+Model 12 : Random Forest on ADASYN Balanced Data
+
+# Fit the model on train data and predict on test data 
+model_rfc.fit(X_train_adasyn,y_train_adasyn)
+y_predicted = model_rfc.predict(X_test)
+# Evaluation Metrices
+print('Classification report:\n', classification_report(y_test, y_predicted))
+print('Confusion matrix:\n',confusion_matrix(y_true = y_test, y_pred = y_predicted))
+print("Logistic Regression Accuracy: ",accuracy_score(y_test,y_predicted))
+print('ROC AUC : ', roc_auc_score(y_test, y_predicted))
+Classification report:
+               precision    recall  f1-score   support
+
+           0       1.00      0.96      0.98     85295
+           1       0.03      0.85      0.06       148
+
+    accuracy                           0.95     85443
+   macro avg       0.52      0.90      0.52     85443
+weighted avg       1.00      0.95      0.98     85443
+
+Confusion matrix:
+ [[81470  3825]
+ [   22   126]]
+Logistic Regression Accuracy:  0.9549758318411105
+ROC AUC :  0.9032534938361774
+Inference: Precision : 0.03 Recall : 0.84 F1-score : 0.06 Accuracy : 0.95 ROC AUC : 0.89
+
+Hyperparameter Tuning Random Forest on ROS Data
+
+Model 13 : Hyper Tuning model Random Forest on ROS Balanced Data
+params = { 
+    'n_estimators': [200, 400],
+    'max_features': ['auto', 'sqrt', 'log2'],
+    'max_depth' : [4,5,6,7,8],
+    'criterion' :['gini', 'entropy']
+}
+cross_val = StratifiedKFold(n_splits=3)
+index_iterator = cross_val.split(X_train_ros, y_train_ros)
+clf = RandomForestClassifier()
+clf_random = RandomizedSearchCV(estimator = clf, param_distributions = params, n_iter = 50, cv = cross_val,
+                                verbose=2, random_state=42, n_jobs = -1,scoring='roc_auc')
+# Insanitiate Model on best params
+model_rfc_tuned = RandomForestClassifier(bootstrap=True,
+                               class_weight={0:1, 1:12}, 
+                               criterion='entropy',
+                               max_depth=8, 
+                               max_features='auto',
+                               n_estimators=200,
+                               n_jobs=-1)
+#Fit the model on train data and predict the model on test data
+model_rfc_tuned.fit(X_train_ros,y_train_ros)
+y_predicted = model_rfc_tuned.predict(X_test)
+# Evaluation Metrices
+print('Classification report:\n', classification_report(y_test, y_predicted))
+print('Confusion matrix:\n',confusion_matrix(y_true = y_test, y_pred = y_predicted))
+print("Logistic Regression Accuracy: ",accuracy_score(y_test,y_predicted))
+print('ROC AUC : ', roc_auc_score(y_test, y_predicted))
+Classification report:
+               precision    recall  f1-score   support
+
+           0       1.00      1.00      1.00     85295
+           1       0.22      0.80      0.35       148
+
+    accuracy                           0.99     85443
+   macro avg       0.61      0.90      0.67     85443
+weighted avg       1.00      0.99      1.00     85443
+
+Confusion matrix:
+ [[84878   417]
+ [   29   119]]
+Logistic Regression Accuracy:  0.994780145828213
+ROC AUC :  0.8995825695558974
+Inference: Precision : 0.20 Recall : 0.79 F1-score : 0.32 Accuracy : 0.99 ROC AUC : 0.89
+
+XG Boost
+
+Model 14 : XGB on ROS Balanced Data
+model_xgb_ros = XGBClassifier()
+#Fit the model on train data and predict the model on test data
+model_xgb_ros.fit(X_train_ros,y_train_ros)
+y_predicted = model_xgb_ros.predict(X_test)
+# Evaluation Metrices
+print('Classification report:\n', classification_report(y_test, y_predicted))
+print('Confusion matrix:\n',confusion_matrix(y_true = y_test, y_pred = y_predicted))
+print("Logistic Regression Accuracy: ",accuracy_score(y_test,y_predicted))
+print('ROC AUC : ', roc_auc_score(y_test, y_predicted))
+Classification report:
+               precision    recall  f1-score   support
+
+           0       1.00      1.00      1.00     85295
+           1       0.30      0.84      0.45       148
+
+    accuracy                           1.00     85443
+   macro avg       0.65      0.92      0.72     85443
+weighted avg       1.00      1.00      1.00     85443
+
+Confusion matrix:
+ [[85010   285]
+ [   24   124]]
+Logistic Regression Accuracy:  0.9963835539482462
+ROC AUC :  0.9172482465465641
+Inference: Precision : 0.92 Recall : 0.78 F1-score : 0.84 Accuracy : 0.99 ROC AUC : 0.88
+
+Hyperparameter Tuning on ROS Balanced data
+
+Model 15 : Hyper Tuning XGB on ROS Balanced Data
+# A parameter grid for XGBoost
+params = {
+        'min_child_weight': [1, 5, 10],
+        'gamma': [0.5, 1, 1.5, 2, 5],
+        'subsample': [0.6, 0.8, 1.0],
+        'colsample_bytree': [0.6, 0.8, 1.0],
+        'max_depth': [3, 4, 5]
+        }
+cross_val = StratifiedKFold(n_splits=4)
+index_iterator = cross_val.split(X_train_ros, y_train_ros)
+
+
+xgb_cross = XGBClassifier(learning_rate=0.02, n_estimators=100, objective='binary:logistic',
+                    silent=True, nthread=1) 
+
+
+xgb_random = RandomizedSearchCV(estimator = xgb_cross, param_distributions = params, n_iter =30 , cv = cross_val,
+                                verbose=2, random_state=42, n_jobs = -1,scoring='roc_auc')
+model_xgb_tuned_ros = XGBClassifier(min_child_weight= 5,
+        gamma= 1.5,
+        subsample= 1.0,
+        colsample_bytree= 0.6,
+        max_depth= 5)
+#Fit the model on train data and predict the model on test data
+model_xgb_tuned_ros.fit(X_train_ros,y_train_ros)
+y_predicted = model_xgb_tuned_ros.predict(X_test)
+# Evaluation Metrices
+print('Classification report:\n', classification_report(y_test, y_predicted))
+print('Confusion matrix:\n',confusion_matrix(y_true = y_test, y_pred = y_predicted))
+print("Logistic Regression Accuracy: ",accuracy_score(y_test,y_predicted))
+print('ROC AUC : ', roc_auc_score(y_test, y_predicted))
+Classification report:
+               precision    recall  f1-score   support
+
+           0       1.00      1.00      1.00     85295
+           1       0.73      0.80      0.76       148
+
+    accuracy                           1.00     85443
+   macro avg       0.87      0.90      0.88     85443
+weighted avg       1.00      1.00      1.00     85443
+
+Confusion matrix:
+ [[85252    43]
+ [   30   118]]
+Logistic Regression Accuracy:  0.9991456292499094
+ROC AUC :  0.8983965822907144
+Inference: Precision : 0.91 Recall : 0.76 F1-score : 0.83 Accuracy : 0.99 ROC AUC : 0.87
+
+Model 16 : XGB on SMOTE Balanced Data¶
+
+model_xgb_smote = XGBClassifier()
+#Fit the model on train data and predict the model on test data
+model_xgb_smote.fit(X_train_smote,y_train_smote)
+y_predicted = model_xgb_smote.predict(X_test)
+# Evaluation Metrices
+print('Classification report:\n', classification_report(y_test, y_predicted))
+print('Confusion matrix:\n',confusion_matrix(y_true = y_test, y_pred = y_predicted))
+print("Logistic Regression Accuracy: ",accuracy_score(y_test,y_predicted))
+print('ROC AUC : ', roc_auc_score(y_test, y_predicted))
+Classification report:
+               precision    recall  f1-score   support
+
+           0       1.00      0.99      1.00     85295
+           1       0.17      0.85      0.28       148
+
+    accuracy                           0.99     85443
+   macro avg       0.58      0.92      0.64     85443
+weighted avg       1.00      0.99      0.99     85443
+
+Confusion matrix:
+ [[84661   634]
+ [   22   126]]
+Logistic Regression Accuracy:  0.9923223669580891
+ROC AUC :  0.9219591623982267
+Inference: Precision : 0.82 Recall : 0.76 F1-score : 0.79 Accuracy : 0.99 ROC AUC : 0.88
+
+Hyperparameter Tuning on Smote Balanced data
+
+Model 17 : Hyper Tuning XGB on SMOTE Balanced Data
+# A parameter grid for XGBoost
+params = {
+        'min_child_weight': [1, 5, 10,15],
+        'gamma': [0.5, 1, 1.5, 2, 5,8],
+        'subsample': [0.6, 0.8, 1.0],
+        'colsample_bytree': [0.6, 0.8, 1.0,1.2],
+        'max_depth': [3, 4, 5,6,7]
+        }
+cross_val = StratifiedKFold(n_splits=5)
+index_iterator = cross_val.split(X_train_smote, y_train_smote)
+
+
+xgb_cross = XGBClassifier(learning_rate=0.02, n_estimators=100, objective='binary:logistic',
+                    silent=True, nthread=1) 
+
+
+xgb_random = RandomizedSearchCV(estimator = xgb_cross, param_distributions = params, n_iter =40 , cv = cross_val,
+                                verbose=2, random_state=42, n_jobs = -1,scoring='roc_auc')
+model_xgb_tuned_smote = XGBClassifier(min_child_weight= 10,
+        gamma= 1.5,
+        subsample= 0.6,
+        colsample_bytree= 0.6,
+        max_depth= 5)
+#Fit the model on train data and predict the model on test data
+model_xgb_tuned_smote.fit(X_train_smote,y_train_smote)
+y_predicted = model_xgb_tuned.predict(X_test)
+#Evaluation Metrices
+print('Classification report:\n', classification_report(y_test, y_predicted))
+print('Confusion matrix:\n',confusion_matrix(y_true = y_test, y_pred = y_predicted))
+print("Logistic Regression Accuracy: ",accuracy_score(y_test,y_predicted))
+print('ROC AUC : ', roc_auc_score(y_test, y_predicted))
+Classification report:
+               precision    recall  f1-score   support
+
+           0       1.00      1.00      1.00     85295
+           1       0.93      0.72      0.81       148
+
+    accuracy                           1.00     85443
+   macro avg       0.96      0.86      0.90     85443
+weighted avg       1.00      1.00      1.00     85443
+
+Confusion matrix:
+ [[85287     8]
+ [   42   106]]
+Logistic Regression Accuracy:  0.9994148145547324
+ROC AUC :  0.8580612120415158
+Inference: Precision : 0.95 Recall : 0.72 F1-score : 0.82 Accuracy : 0.99 ROC AUC : 0.85
+
+Model 18 : XGB on ADASYN Balanced Data
+
+model_xgb_adasyn = XGBClassifier()
+#Fit the model on train data and predict the model on test data
+model_xgb_adasyn.fit(X_train_adasyn,y_train_adasyn)
+y_predicted = model_xgb_adasyn.predict(X_test)
+#Evaluation Metrices
+print('Classification report:\n', classification_report(y_test, y_predicted))
+print('Confusion matrix:\n',confusion_matrix(y_true = y_test, y_pred = y_predicted))
+print("Logistic Regression Accuracy: ",accuracy_score(y_test,y_predicted))
+print('ROC AUC : ', roc_auc_score(y_test, y_predicted))
+Classification report:
+               precision    recall  f1-score   support
+
+           0       1.00      0.97      0.99     85295
+           1       0.05      0.89      0.10       148
+
+    accuracy                           0.97     85443
+   macro avg       0.53      0.93      0.54     85443
+weighted avg       1.00      0.97      0.98     85443
+
+Confusion matrix:
+ [[83007  2288]
+ [   17   131]]
+Logistic Regression Accuracy:  0.9730229509731634
+ROC AUC :  0.9291552925221369
+Inference: Precision : 0.76 Recall : 0.76 F1-score : 0.76 Accuracy : 0.99 ROC AUC : 0.87
+
+Model 19: Hyperparameter Tuning on Adasyn Balanced data
+
+# A parameter grid for XGBoost
+params = {
+        'min_child_weight': [1, 5, 10],
+        'gamma': [0.5, 1, 1.5, 2, 5],
+        'subsample': [0.6, 0.8, 1.0],
+        'colsample_bytree': [0.6, 0.8, 1.0],
+        'max_depth': [3, 4, 5]
+        }
+cross_val = StratifiedKFold(n_splits=5)
+index_iterator = cross_val.split(X_train_adasyn, y_train_adasyn)
+
+
+xgb_cross = XGBClassifier(learning_rate=0.02, n_estimators=100, objective='binary:logistic',
+                    silent=True, nthread=1) 
+
+
+xgb_random = RandomizedSearchCV(estimator = xgb_cross, param_distributions = params, n_iter =30 , cv = cross_val,
+                                verbose=2, random_state=42, n_jobs = -1,scoring='roc_auc')
+model_xgb_tuned_adasyn = XGBClassifier(min_child_weight= 10,
+        gamma= 1.5,
+        subsample= 0.6,
+        colsample_bytree= 0.6,
+        max_depth= 5)
+#Fit the model on train data and predict the model on test data
+model_xgb_tuned_adasyn.fit(X_train_adasyn,y_train_adasyn)
+y_predicted = model_xgb_tuned_adasyn.predict(X_test)
+#Evaluation Metrices
+print('Classification report:\n', classification_report(y_test, y_predicted))
+print('Confusion matrix:\n',confusion_matrix(y_true = y_test, y_pred = y_predicted))
+print("Logistic Regression Accuracy: ",accuracy_score(y_test,y_predicted))
+print('ROC AUC : ', roc_auc_score(y_test, y_predicted))
+Classification report:
+               precision    recall  f1-score   support
+
+           0       1.00      0.99      1.00     85295
+           1       0.18      0.85      0.30       148
+
+    accuracy                           0.99     85443
+   macro avg       0.59      0.92      0.65     85443
+weighted avg       1.00      0.99      1.00     85443
+
+Confusion matrix:
+ [[84728   567]
+ [   22   126]]
+Logistic Regression Accuracy:  0.9931065154547476
+ROC AUC :  0.9223519169559383
+Inference: Precision : 0.54 Recall : 0.77 F1-score : 0.64 Accuracy : 0.99 ROC AUC : 0.88
+
+Step 6: Final Analysis
+
+Best Model considering various parameters and scenarios
+In nutshell rather than aiming for overall accuracy on the entire dataset, we cared more about detecting most of the fraud cases (recall), whilst keeping the cost at which this is achieved under control (precision).We have applied XGBoost on Smote data and got the best evaluation metrices.
+
+#Predicting on the test data using the best model
+y_predicted = model_xgb_smote.predict(X_test)
+# Create true and false positive rates
+fpr, tpr, thresholds = roc_curve(y_test, y_predicted)
+roc_auc = roc_auc_score(y_test, y_predicted)
+# Printing Evaluation Metrices
+print('Classification report for XGBoost Smote:\n', classification_report(y_test, y_predicted))
+print("Logistic Regression Accuracy: ",accuracy_score(y_test,y_predicted))
+print('ROC AUC : ', roc_auc_score(y_test, y_predicted))
+print('Confusion matrix:\n',confusion_matrix(y_true = y_test, y_pred = y_predicted))
+threshold = thresholds[np.argmax(tpr-fpr)]
+print("Threshold:",threshold)
+Classification report for XGBoost Smote:
+               precision    recall  f1-score   support
+
+           0       1.00      0.99      1.00     85295
+           1       0.17      0.85      0.28       148
+
+    accuracy                           0.99     85443
+   macro avg       0.58      0.92      0.64     85443
+weighted avg       1.00      0.99      0.99     85443
+
+Logistic Regression Accuracy:  0.9923223669580891
+ROC AUC :  0.9219591623982267
+Confusion matrix:
+ [[84661   634]
+ [   22   126]]
+Threshold: 1
+# Plotting the roc curve 
+plt.rcParams['figure.figsize'] = [6,6]
+plot_roc_curve(fpr,tpr,roc_auc)
+
+Inference: Precision : 0.82 Recall : 0.76 F1-score : 0.79 Accuracy : 0.99 ROC AUC : 0.88
+
+Important Features
+
+target = 'Class'
+pca_comp = ['V1', 'V2', 'V3', 'V4', 'V5', 'V6', 'V7', 'V8', 'V9', 'V10',\
+       'V11', 'V12', 'V13', 'V14', 'V15', 'V16', 'V17', 'V18', 'V19',\
+       'V20', 'V21', 'V22', 'V23', 'V24', 'V25', 'V26', 'V27', 'V28',\
+       'Amount', 'Time']
+tmp = pd.DataFrame({'Feature': pca_comp, 'Feature importance': model_xgb_smote.feature_importances_})
+tmp = tmp.sort_values(by='Feature importance',ascending=False)
+plt.figure(figsize = (7,4))
+plt.title('Features importance',fontsize=14)
+s = sns.barplot(x='Feature',y='Feature importance',data=tmp)
+s.set_xticklabels(s.get_xticklabels(),rotation=90)
+plt.show()
+
+Inference: We found out that PCA converted variables like V15, V5 are able to explain the maximum variance and hence we can target these variables to detect a fraud.
+
+Step 7: Closing Statement
+
+We have build a logistic regression model based on the transaction data provided to us. The data provided to us was very imbalanced data set. Hence, for building a proper logistic model on top of that we have used some balancing techniques like (ROS,SMOTE etc) to balance the data and applied some of very popular logistic regression models like Random Forest, Logistic regression and some boosting techniques like XGBoost to catch any frud transactions. In our scenario Accuracy was not a concerning Evaluation criteria and we focussed more on Recall and AUC. We finally able to build a proper logistic model and predicted on test data and the results were satisfying. We were also able to figure out the variables which will be important in detecting any fraud transactions
+
